@@ -25,7 +25,8 @@ Sample usage with express :
 
 ```js
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs-decorator');
+app.set('view engine', 'ejs');
+app.engine('ejs',  require('ejs-decorator').__express);
 ```
 
 # Helpers
