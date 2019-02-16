@@ -4,6 +4,10 @@ Why ? Because the native EJS library does not provides blocks and inheritance. I
 
 The promise here is to not change anything from the source code of EJS and still use the library out of the box.
 
+---
+>> WORK IN PROGRESS / NOT TESTED
+---
+
 # Usage
 
 You can both use your own instance of EJS or just initialize this library directly :
@@ -44,7 +48,7 @@ some texts ....
 ## Using Blocks
 
 ```html
-<%- block("demo"); %>
+<%- render("demo"); %>
 ```
 
 ## Define helpers
@@ -69,7 +73,7 @@ You can also provide your own functions and improve it's functions
 
 ```js
 var ejs = require('ejs-decorator');
-ejs.hookOutput('sample', function(args, output, locals, options) {
+ejs.hookOutput('sample', function(args, locals, options, output) {
   return output.replaceAll(args[0], args[1]);
 });
 ```
@@ -86,11 +90,8 @@ And usage :
 
 ```js
 var ejs = require('ejs-decorator');
-ejs.hookCallback('sample', function(args, output, locals, options) {
-  // can also use this.sanitize()
-  this.output(
-    output.replaceAll(args[0], args[1])
-  );
+ejs.hookCallback('sample', function(args, locals, options, cb) {
+  // @todo
 });
 ```
 

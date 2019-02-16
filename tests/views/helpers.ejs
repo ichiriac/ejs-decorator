@@ -1,0 +1,10 @@
+<%_ helper('css', function(file) { _%>
+  <%_ block('css', function() { _%>
+    <link media="all" rel="stylesheet" href="<%= file -%>">
+  <%_ }) _%>
+<%_ }) _%>
+<%_ helper('js', function(file) { _%>
+  <%_ block('js', function() { _%>
+    <script src="<%= file -%>"></script>
+  <%_ }) _%>
+<%_ }) _%>
