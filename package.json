@@ -1,0 +1,23 @@
+{
+  "name": "ejs-decorator",
+  "version": "1.0.0",
+  "description": "Provides extra helpers over the native EJS library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ichiriac/ejs-decorator.git"
+  },
+  "keywords": [
+    "ejs",
+    "templating"
+  ],
+  "author": "Ioan CHIRIAC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ichiriac/ejs-decorator/issues"
+  },
+  "homepage": "https://github.com/ichiriac/ejs-decorator#readme"
+}
