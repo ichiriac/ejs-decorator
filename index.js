@@ -1,3 +1,5 @@
+'use strict';
+
 var hookOutput = {};
 var hookCallback = {};
 var hookFunction = {};
@@ -16,7 +18,7 @@ var wrapper = function(lib) {
  */
 wrapper.proxy = function(ejs) {
   for(var k in ejs) {
-    if (ejs.hasOwnProperty(k)) {
+    if (k !== 'name' && ejs.hasOwnProperty(k)) {
       wrapper[k] = ejs[k];
       if (typeof wrapper[k] === 'function') {
         wrapper[k].bind(ejs);
@@ -24,21 +26,22 @@ wrapper.proxy = function(ejs) {
     }
   }
   var compile = ejs.compile;
-  ejs.compile = wrapper.compile = function(template, opts) {
-    var fn = compile(template, opts);
-    return function(locals) {
-      var prev = locals._stack;
-      locals._stack = [];
+  ejs.compile = wrapper.compile = function(template, opt) {
+    var fn = compile(template, opt);
+    return function(state) {
+      var locals = Object.assign({}, state);
+      var scope = {};
+      scope._stack = [];
       for(var k in hookOutput) {
-        locals[k] = function() {
-          locals._stack.push({
+        scope[k] = function() {
+          scope._stack.push({
             name: this.toString(),
             args: Array.prototype.slice.call(arguments) 
           });
         }.bind(k);
       }
       for(var k in hookCallback) {
-        locals[k] = function() {
+        scope[k] = function() {
           var args = Array.prototype.slice.call(arguments);
           var cb = args.pop();
           if (typeof cb !== 'function') {
@@ -76,7 +79,7 @@ wrapper.proxy = function(ejs) {
           return this.apply(wrapper, [
             args,
             locals,
-            opts,
+            opt,
             function() {
               for(var i = 0; i < params.length; i++) {
                 if (params[i] != "") {
@@ -84,7 +87,7 @@ wrapper.proxy = function(ejs) {
                 }
               }
               return cb(
-                opts.escape || ejs.escapeXML,
+                opt.escape || ejs.escapeXML,
                 wrapper.rethrow,
                 locals
               );
@@ -93,22 +96,24 @@ wrapper.proxy = function(ejs) {
         }.bind(hookCallback[k]);
       }
       for(var k in hookFunction) {
-        locals[k] = function() {
-          return this.apply(wrapper, [
+        scope[k] = function() {
+          return hookFunction[this.toString()].apply(wrapper, [
             Array.prototype.slice.call(arguments),
             locals,
-            opts
+            opt
           ]);
-        }.bind(hookFunction[k]);
+        }.bind(k);
       }
-      var output = fn.apply(this, arguments);
+      // inject the current scope
+      locals = Object.assign(locals, scope);
+      var output = fn.apply(this, [locals]);
       if (locals._stack.length > 0) {
         locals._stack.forEach(function(cb) {
           var result = hookOutput[cb.name].apply(
             wrapper, [
               cb.args,
               locals,
-              opts,
+              opt,
               output
             ]
           );
@@ -117,7 +122,12 @@ wrapper.proxy = function(ejs) {
           }
         });
       }
-      locals._stack = prev;
+      // preserve state
+      for(var k in locals) {
+        if (!scope.hasOwnProperty(k)) {
+          state[k] = locals[k];
+        }
+      }
       return output;
     };
   };
@@ -157,7 +167,7 @@ wrapper.rethrow = function(err, str, flnm, lineno, esc){
  * Helper for rendering a file and return its contents
  */
 wrapper.renderFileSync = function(filename, locals, opts) {
-  output = null;
+  var output = null;
   this.renderFile(filename, locals, opts, function(err, out) {
     if (err) {
       throw err;

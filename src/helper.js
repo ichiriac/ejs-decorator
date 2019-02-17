@@ -1,3 +1,4 @@
+'use strict';
 module.exports = function(ejs) {
   ejs.hookCallback('helper', function(args, locals, options, cb) {
     var name = args[0];
