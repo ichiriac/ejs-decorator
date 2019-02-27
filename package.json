@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/ichiriac/ejs-decorator/issues"
   },
-  "homepage": "https://github.com/ichiriac/ejs-decorator#readme"
+  "homepage": "https://github.com/ichiriac/ejs-decorator#readme",
+  "dependencies": {
+    "ejs": "^2.6.1"
+  }
 }
