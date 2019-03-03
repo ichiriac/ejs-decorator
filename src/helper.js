@@ -18,6 +18,11 @@ module.exports = function(ejs) {
     } else {
       file = this.resolveInclude(args[0], options.filename);
     }
+    if (args.length === 2) {
+      if (typeof args[1] === 'function') {
+        var output = args[1]();
+      }
+    }
     return this.renderFileSync(file, locals, options);
   });
 };
